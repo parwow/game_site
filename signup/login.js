@@ -4,7 +4,7 @@
 const SUPABASE_URL = "https://enmuxtbyxrwvuxequyww.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_Kl8ix4ETTWsr3V0GEuRuRA_w89er502";
 
-const supabase = window.supabase.createClient(
+const sb = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_ANON_KEY
 );
@@ -46,11 +46,7 @@ async function login() {
 
     if (email.value.trim() === "") {
 
-        result.innerHTML =
-            `<div class="text-danger">
-                이메일을 입력해주세요.
-            </div>`;
-
+        result.innerHTML = `<div class="text-danger">이메일을 입력해주세요.</div>`;
         email.focus();
         return;
 
@@ -58,46 +54,29 @@ async function login() {
 
     if (password.value === "") {
 
-        result.innerHTML =
-            `<div class="text-danger">
-                비밀번호를 입력해주세요.
-            </div>`;
-
+        result.innerHTML = `<div class="text-danger">비밀번호를 입력해주세요.</div>`;
         password.focus();
         return;
 
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-
+    const { data, error } = await sb.auth.signInWithPassword({
         email: email.value,
         password: password.value
-
     });
 
     if (error) {
 
-        result.innerHTML =
-            `<div class="text-danger">
-                이메일 또는 비밀번호가 올바르지 않습니다.
-            </div>`;
-
+        result.innerHTML = `<div class="text-danger">이메일 또는 비밀번호가 올바르지 않습니다.</div>`;
         return;
 
     }
 
-    result.innerHTML =
-        `<div class="text-success">
-            로그인 성공!
-        </div>`;
+    result.innerHTML = `<div class="text-success">로그인 성공!</div>`;
 
-    // 1초 후 메인 페이지 이동
     setTimeout(() => {
-
         window.location.href = "index.html";
-
     }, 1000);
-
 }
 
 // ================================
@@ -112,9 +91,7 @@ document.getElementById("loginBtn")
 document.addEventListener("keydown", (e) => {
 
     if (e.key === "Enter") {
-
         login();
-
     }
 
 });
@@ -125,25 +102,16 @@ document.addEventListener("keydown", (e) => {
 document.getElementById("discordLogin")
 .addEventListener("click", async () => {
 
-    const { error } = await supabase.auth.signInWithOAuth({
-
+    const { error } = await sb.auth.signInWithOAuth({
         provider: "discord",
-
         options: {
-
             redirectTo: "https://game2gether.pages.dev"
-
         }
-
     });
 
     if (error) {
 
-        result.innerHTML =
-            `<div class="text-danger">
-                Discord 로그인에 실패했습니다.
-            </div>`;
-
+        result.innerHTML = `<div class="text-danger">Discord 로그인에 실패했습니다.</div>`;
     }
 
 });
@@ -153,12 +121,10 @@ document.getElementById("discordLogin")
 // ================================
 (async () => {
 
-    const { data } = await supabase.auth.getSession();
+    const { data } = await sb.auth.getSession();
 
     if (data.session) {
-
         window.location.href = "index.html";
-
     }
 
 })();

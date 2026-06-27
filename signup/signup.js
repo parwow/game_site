@@ -1,3 +1,4 @@
+
 // ================================
 // Supabase 설정
 // ================================
@@ -10,7 +11,7 @@ const sb = window.supabase.createClient(
 );
 
 // ================================
-// DOM 로딩 이후 실행 (핵심)
+// DOM 로딩 이후 실행
 // ================================
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -18,82 +19,116 @@ document.addEventListener("DOMContentLoaded", () => {
     // 요소
     // ================================
     const email = document.getElementById("email");
+    const nickname = document.getElementById("nickname");
     const password = document.getElementById("password");
-    const result = document.getElementById("result");
+    const confirmPassword = document.getElementById("confirmPassword");
 
-    const loginBtn = document.getElementById("loginBtn");
+    const result = document.getElementById("result");
+    const signupBtn = document.getElementById("signupBtn");
     const discordLogin = document.getElementById("discordLogin");
+
     const togglePassword = document.getElementById("togglePassword");
+    const toggleConfirmPassword = document.getElementById("toggleConfirmPassword");
 
     // ================================
-    // 비밀번호 보기 / 숨기기
+    // 안전 체크 함수
+    // ================================
+    const showError = (msg) => {
+        result.innerHTML = `<div class="text-danger">${msg}</div>`;
+    };
+
+    const showSuccess = (msg) => {
+        result.innerHTML = `<div class="text-success">${msg}</div>`;
+    };
+
+    // ================================
+    // 비밀번호 토글
     // ================================
     if (togglePassword) {
-
         togglePassword.addEventListener("click", () => {
 
-            const icon = document.querySelector("#togglePassword i");
+            const icon = togglePassword.querySelector("i");
 
-            if (password.type === "password") {
-                password.type = "text";
-                icon.className = "bi bi-eye-slash";
-            } else {
-                password.type = "password";
-                icon.className = "bi bi-eye";
-            }
+            password.type = password.type === "password" ? "text" : "password";
 
+            icon.className =
+                password.type === "password"
+                    ? "bi bi-eye"
+                    : "bi bi-eye-slash";
         });
+    }
 
+    if (toggleConfirmPassword) {
+        toggleConfirmPassword.addEventListener("click", () => {
+
+            const icon = toggleConfirmPassword.querySelector("i");
+
+            confirmPassword.type =
+                confirmPassword.type === "password" ? "text" : "password";
+
+            icon.className =
+                confirmPassword.type === "password"
+                    ? "bi bi-eye"
+                    : "bi bi-eye-slash";
+        });
     }
 
     // ================================
-    // 로그인 함수
+    // 회원가입
     // ================================
-    async function login() {
+    async function signup() {
 
         result.innerHTML = "";
 
-        if (email.value.trim() === "") {
-            result.innerHTML = `<div class="text-danger">이메일을 입력해주세요.</div>`;
-            email.focus();
+        // 기본 검증
+        if (!email.value || !password.value || !nickname.value) {
+            showError("모든 값을 입력해주세요.");
             return;
         }
 
-        if (password.value === "") {
-            result.innerHTML = `<div class="text-danger">비밀번호를 입력해주세요.</div>`;
-            password.focus();
+        if (password.value !== confirmPassword.value) {
+            showError("비밀번호가 일치하지 않습니다.");
             return;
         }
 
-        const { error } = await sb.auth.signInWithPassword({
+        if (password.value.length < 6) {
+            showError("비밀번호는 최소 6자 이상이어야 합니다.");
+            return;
+        }
+
+        // Supabase 회원가입
+        const { data, error } = await sb.auth.signUp({
             email: email.value,
             password: password.value
         });
 
+        // 🔥 에러 출력 (핵심)
         if (error) {
-            result.innerHTML = `<div class="text-danger">이메일 또는 비밀번호가 올바르지 않습니다.</div>`;
+            console.log("SIGNUP ERROR:", error);
+            showError(error.message);
             return;
         }
 
-        result.innerHTML = `<div class="text-success">로그인 성공!</div>`;
+        console.log("SIGNUP SUCCESS:", data);
 
+        showSuccess("회원가입 성공! 이메일을 확인하세요 (설정에 따라 인증 필요)");
+
+        // 자동 이동 (원하면 제거 가능)
         setTimeout(() => {
-            window.location.href = "index.html";
-        }, 1000);
+            window.location.href = "login.html";
+        }, 1500);
     }
 
     // ================================
-    // 로그인 버튼
+    // 버튼 이벤트
     // ================================
-    if (loginBtn) {
-        loginBtn.addEventListener("click", login);
+    if (signupBtn) {
+        signupBtn.addEventListener("click", signup);
     }
 
-    // ================================
-    // Enter 키 로그인
-    // ================================
+    // Enter 키 가입
     document.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") login();
+        if (e.key === "Enter") signup();
     });
 
     // ================================
@@ -111,24 +146,12 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             if (error) {
-                result.innerHTML = `<div class="text-danger">Discord 로그인에 실패했습니다.</div>`;
+                console.log(error);
+                showError("Discord 로그인 실패");
             }
 
         });
 
     }
-
-    // ================================
-    // 이미 로그인된 경우 자동 이동
-    // ================================
-    (async () => {
-
-        const { data } = await sb.auth.getSession();
-
-        if (data.session) {
-            window.location.href = "index.html";
-        }
-
-    })();
 
 });

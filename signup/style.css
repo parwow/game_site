@@ -1,0 +1,101 @@
+/* 전체 배경 */
+body {
+    background: #f4f6f9;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Pretendard", "Noto Sans KR", sans-serif;
+}
+
+/* 회원가입 박스 */
+.signup-box {
+    background: white;
+    width: 100%;
+    max-width: 450px;
+    padding: 35px;
+    border-radius: 15px;
+}
+
+/* 제목 */
+.signup-box h2 {
+    font-weight: bold;
+}
+
+/* 입력창 */
+.form-control {
+    height: 48px;
+}
+
+/* 버튼 */
+.btn {
+    height: 48px;
+    font-weight: 600;
+}
+
+/* Discord 버튼 */
+#discordLogin {
+    background: #5865F2;
+    border: none;
+    color: white;
+    transition: 0.2s;
+}
+
+#discordLogin:hover {
+    background: #4752c4;
+}
+
+/* 회원가입 버튼 */
+#signupBtn {
+    transition: 0.2s;
+}
+
+#signupBtn:hover {
+    transform: translateY(-2px);
+}
+
+/* 눈 버튼 */
+.input-group button {
+    width: 55px;
+}
+
+/* 결과 메시지 */
+#result {
+    font-weight: bold;
+    min-height: 24px;
+}
+
+/* 오류 */
+.text-danger {
+    font-size: 14px;
+}
+
+/* 성공 */
+.text-success {
+    font-size: 15px;
+}
+
+/* 로그인 버튼 */
+.btn-link {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.btn-link:hover {
+    text-decoration: underline;
+}
+
+/* 모바일 */
+@media (max-width: 576px) {
+
+    .signup-box {
+        margin: 20px;
+        padding: 25px;
+    }
+
+    body {
+        align-items: flex-start;
+        padding-top: 30px;
+    }
+
+}
